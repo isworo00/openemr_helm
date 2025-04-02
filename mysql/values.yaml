@@ -69,18 +69,18 @@ primary:
       readOnly: true
 
   # Resource Requests/Limits (MODIFY BASED ON YOUR WORKLOAD)
-  resources:
-    requests:
-      cpu: "1000m"  # Minimum guaranteed
-      memory: "2Gi"
-    limits:
-      cpu: "2000m"  # Hard limit
-      memory: "4Gi"
+  # resources:
+  #  requests:
+  #    cpu: "1000m"  # Minimum guaranteed
+  #    memory: "2Gi"
+  #  limits:
+  #    cpu: "2000m"  # Hard limit
+  #    memory: "4Gi"
 
   # Storage Configuration
   persistence:
     enabled: true  # REQUIRED for production
-    size: "20Gi"   # Minimum recommended
+    size: "10Gi"   # Minimum recommended
     storageClass: ""  # Inherits from global
     accessModes:
       - ReadWriteOnce
@@ -88,7 +88,7 @@ primary:
 
 # Replica Node Configuration
 secondary:
-  replicaCount: 2  # Recommended: 2+ for HA
+  replicaCount: 1  # Recommended: 2+ for HA
   
   configuration: |
     [mariadb]
@@ -122,17 +122,17 @@ secondary:
       readOnly: true
 
   # Replica resources can be smaller than primary
-  resources:
-    requests:
-      cpu: "500m"
-      memory: "1Gi"
-    limits:
-      cpu: "1000m"
-      memory: "2Gi"
+  #resources:
+  #  requests:
+  #    cpu: "500m"
+  #    memory: "1Gi"
+  #  limits:
+  #    cpu: "1000m"
+  #    memory: "2Gi"
 
   persistence:
     enabled: true
-    size: "20Gi"
+    size: "10Gi"
     storageClass: ""  # Inherits from global
     accessModes:
       - ReadWriteOnce
