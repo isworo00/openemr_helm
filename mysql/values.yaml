@@ -4,7 +4,7 @@
 
 global:
   # StorageClass - MUST configure for your environment
-  storageClass: "standard"  # Options: "standard", "gp2", "premium-rwo", etc.
+  storageClass: "local-path"  # Options: "standard", "gp2", "premium-rwo", etc.
   
   # For private registries (uncomment if needed)
   # imageRegistry: "registry.example.com"
