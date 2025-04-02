@@ -142,6 +142,7 @@ service:
   type: ClusterIP  # Options: ClusterIP, NodePort, LoadBalancer
   clusterIP: None  # Required for StatefulSet DNS
   port: 3306  # Standard MySQL port
+  name: mysql
   # NodePort configuration (uncomment if type=NodePort)
   # nodePort: 30306
   labels:

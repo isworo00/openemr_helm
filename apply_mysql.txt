@@ -1,1 +1,1 @@
-helm install my-mariadb bitnami/mariadb mysql/values.yaml
+helm install my-mariadb bitnami/mariadb -f mysql/values.yaml
