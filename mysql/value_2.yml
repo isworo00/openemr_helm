@@ -1,0 +1,157 @@
+global:
+  storageClass: "local-path"
+  imageRegistry: ""  # Preserved private registry config
+  imagePullSecrets: []
+
+architecture: replication
+
+auth:
+  existingSecret: "mariadb-credentials"
+  existingSecretPasswordKey: "root-password"
+  existingReplicationPasswordKey: "replication-password"
+  existingUserPasswordKey: "user-password"
+  username: "repluser"
+  database: "primary_db"
+  replicationUserRequireSSL: true
+
+primary:
+  configuration: |
+    [mariadb]
+    log-bin
+    log-basename=mysql-sts  # Changed to match StatefulSet name
+    server-id=1
+    ssl_ca=/etc/mysql/ssl/main/ca.crt
+    ssl_cert=/etc/mysql/ssl/main/tls.crt
+    ssl_key=/etc/mysql/ssl/main/tls.key
+    ssl_cipher=TLS_AES_256_GCM_SHA384
+    require_secure_transport=ON
+    binlog_format=ROW
+    binlog_row_image=FULL
+    sync_binlog=1
+    expire_logs_days=7
+    innodb_buffer_pool_size=1G
+    innodb_flush_log_at_trx_commit=1
+
+  podLabels:
+    app: mysql
+    role: primary
+
+  extraVolumes:
+    - name: mysql-server-certs
+      secret:
+        secretName: mysql-server-certs
+        defaultMode: 0400
+
+    - name: mysql-replication-certs  # Added replica certs volume
+      secret:
+        secretName: mysql-replication-certs
+        defaultMode: 0400
+
+  extraVolumeMounts:
+    - name: mysql-server-certs
+      mountPath: /etc/mysql/ssl/main/
+      readOnly: true
+
+    - name: mysql-replication-certs  # Added replica certs mount
+      mountPath: /etc/mysql/ssl/replication/
+      readOnly: true
+
+  # Resource Requests/Limits (MODIFY BASED ON YOUR WORKLOAD)
+  # resources:
+  #  requests:
+  #    cpu: "1000m"  # Minimum guaranteed
+  #    memory: "2Gi"
+  #  limits:
+  #    cpu: "2000m"  # Hard limit
+  #    memory: "4Gi"
+
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClass: ""
+    accessModes: [ReadWriteOnce]
+    annotations: {}
+
+secondary:
+  replicaCount: 1
+  configuration: |
+    [mariadb]
+    log-basename=mysql-sts  # Changed to match StatefulSet name
+    server-id=2
+    ssl_ca=/etc/mysql/ssl/replication/ca.crt
+    ssl_cert=/etc/mysql/ssl/replication/tls.crt
+    ssl_key=/etc/mysql/ssl/replication/tls.key
+    read_only=ON
+    slave_parallel_threads=4
+
+  podLabels:
+    app: mysql
+    role: secondary
+
+  # Replica resources can be smaller than primary
+  #resources:
+  #  requests:
+  #    cpu: "500m"
+  #    memory: "1Gi"
+  #  limits:
+  #    cpu: "1000m"
+  #    memory: "2Gi"
+
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClass: ""
+    accessModes: [ReadWriteOnce]
+
+service:
+  type: ClusterIP
+  clusterIP: None
+  port: 3306
+  name: mysql  # Matches original service name
+  labels:
+    app: mysql
+  annotations: {}
+
+initdbScripts:
+  primary_init.sql: |
+    CREATE USER 'repluser'@'%' IDENTIFIED BY '$REPLICATION_PASSWORD';
+    GRANT REPLICATION REPLICA ON *.* TO 'repluser'@'%' REQUIRE SSL;
+    CREATE DATABASE primary_db;
+  
+  replica_init.sql: |
+    CHANGE MASTER TO 
+    MASTER_HOST='mysql-sts-0.mysql.default.svc.cluster.local',
+    MASTER_USER='repluser',
+    MASTER_PASSWORD='$REPLICATION_PASSWORD',
+    MASTER_SSL_CA='/etc/mysql/ssl/replication/ca.crt',
+    MASTER_SSL=1;
+    START SLAVE;
+
+metrics:
+  enabled: true
+  service:
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "9104"
+
+networkPolicy:
+  enabled: true
+  allowExternal: false
+
+affinity: {}
+nodeSelector: {}
+tolerations: []
+
+updateStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    partition: 0
+
+livenessProbe:
+  initialDelaySeconds: 120
+  periodSeconds: 10
+  failureThreshold: 3
+
+readinessProbe:
+  initialDelaySeconds: 30
+  periodSeconds: 10
