@@ -1,0 +1,1 @@
+copy /b *.yaml "full cert.yaml"

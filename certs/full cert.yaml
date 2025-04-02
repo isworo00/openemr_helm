@@ -1,0 +1,161 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ca-certificate
+spec:
+  secretName: ca-key-pair
+  duration: 87660h # 10y
+  renewBefore: 360h # 15d
+  subject:
+    organizations:
+      - OpenEMR admin
+  commonName: OpenEMR admin
+  isCA: true
+  privateKey:
+    size: 2048
+    algorithm: RSA
+    encoding: PKCS1
+  usages:
+    - digital signature
+    - key encipherment
+  issuerRef:
+    name: selfsigned-issuer
+    kind: Issuer
+    group: cert-manager.ioapiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: ca-issuer
+spec:
+  ca:
+    secretName: ca-key-pairapiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: mysql-openemr-client
+spec:
+  secretName: mysql-openemr-client-certs
+  duration: 87660h # 10y
+  renewBefore: 360h # 15d
+  isCA: false
+  privateKey:
+    size: 2048
+    algorithm: RSA
+    encoding: PKCS1
+  usages:
+    - digital signature
+    - key encipherment
+    - client auth
+  subject:
+    organizations:
+      - openemr
+  commonName: openemr
+  issuerRef:
+    name: ca-issuer
+    kind: Issuer
+    group: cert-manager.io
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: mysql-phpmyadmin-client
+spec:
+  secretName: mysql-phpmyadmin-client-certs
+  duration: 87660h # 10y
+  renewBefore: 360h # 15d
+  isCA: false
+  privateKey:
+    size: 2048
+    algorithm: RSA
+    encoding: PKCS1
+  usages:
+    - digital signature
+    - key encipherment
+    - client auth
+  subject:
+    organizations:
+      - phpmyadmin
+  commonName: phpmyadmin
+  issuerRef:
+    name: ca-issuer
+    kind: Issuer
+    group: cert-manager.io
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: mysql-replication
+spec:
+  secretName: mysql-replication-certs
+  duration: 87660h # 10y
+  renewBefore: 360h # 15d
+  isCA: false
+  privateKey:
+    size: 2048
+    algorithm: RSA
+    encoding: PKCS1
+  usages:
+    - digital signature
+    - key encipherment
+    - server auth
+    - client auth
+  subject:
+    organizations:
+      - mysql
+  commonName: mysql
+  issuerRef:
+    name: ca-issuer
+    kind: Issuer
+    group: cert-manager.ioapiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: mysql
+spec:
+  secretName: mysql-server-certs
+  duration: 87660h # 10y
+  renewBefore: 360h # 15d
+  isCA: false
+  privateKey:
+    size: 2048
+    algorithm: RSA
+    encoding: PKCS1
+  usages:
+    - digital signature
+    - key encipherment
+    - server auth
+  subject:
+    organizations:
+      - mysql
+  commonName: mysql
+  dnsNames:
+    - mysql-sts-0
+    - mysql-sts-0.mysql.default.svc.cluster.local
+  issuerRef:
+    name: ca-issuer
+    kind: Issuer
+    group: cert-manager.ioapiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: phpmyadmin
+spec:
+  secretName: phpmyadmin-server-certs
+  duration: 87660h # 10y
+  renewBefore: 360h # 15d
+  isCA: false
+  privateKey:
+    size: 2048
+    algorithm: RSA
+    encoding: PKCS1
+  usages:
+    - digital signature
+    - key encipherment
+    - server auth
+  subject:
+    organizations:
+      - phpmyadmin
+  commonName: phpmyadmin
+  issuerRef:
+    name: ca-issuer
+    kind: Issuer
+    group: cert-manager.ioapiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: selfsigned-issuer
+spec:
+  selfSigned: {}

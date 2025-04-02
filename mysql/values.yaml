@@ -1,0 +1,206 @@
+# mariadb-complete-reference.yaml
+# Bitnami MariaDB Helm Chart - Production Ready with TLS & Replication
+# All modifiable parameters included with documentation
+
+global:
+  # StorageClass - MUST configure for your environment
+  storageClass: "standard"  # Options: "standard", "gp2", "premium-rwo", etc.
+  
+  # For private registries (uncomment if needed)
+  # imageRegistry: "registry.example.com"
+  # imagePullSecrets:
+  #   - name: "my-registry-secret"
+
+# Cluster topology
+architecture: replication  # Options: "standalone" | "replication"
+
+# Authentication - ALWAYS use secrets in production
+auth:
+  existingSecret: "mariadb-credentials"  # Pre-created secret name
+  existingSecretPasswordKey: "root-password"  # Key in secret for root password
+  existingReplicationPasswordKey: "replication-password"  # Replication user password
+  existingUserPasswordKey: "user-password"  # App user password
+  username: "repluser"  # Replication username
+  database: "primary_db"  # Initial database to create
+  replicationUserRequireSSL: true  # Enforce SSL for replication
+
+# Primary Node Configuration
+primary:
+  # Custom my.cnf configuration
+  configuration: |
+    [mariadb]
+    # Server Identity
+    log-bin
+    log-basename=my-mariadb
+    server-id=1
+    
+    # TLS Configuration
+    ssl_ca=/etc/mysql/ssl/main/ca.crt
+    ssl_cert=/etc/mysql/ssl/main/tls.crt
+    ssl_key=/etc/mysql/ssl/main/tls.key
+    ssl_cipher=TLS_AES_256_GCM_SHA384
+    require_secure_transport=ON
+    
+    # Replication Settings
+    binlog_format=ROW
+    binlog_row_image=FULL
+    sync_binlog=1
+    expire_logs_days=7
+    
+    # Performance
+    innodb_buffer_pool_size=1G
+    innodb_flush_log_at_trx_commit=1
+
+  # Pod Labels
+  podLabels:
+    app: mysql
+    role: primary
+
+  # Certificate Mounting
+  extraVolumes:
+    - name: mysql-server-certs
+      secret:
+        secretName: mysql-server-certs
+        defaultMode: 0400  # Restrict permissions
+
+  extraVolumeMounts:
+    - name: mysql-server-certs
+      mountPath: /etc/mysql/ssl/main/
+      readOnly: true
+
+  # Resource Requests/Limits (MODIFY BASED ON YOUR WORKLOAD)
+  resources:
+    requests:
+      cpu: "1000m"  # Minimum guaranteed
+      memory: "2Gi"
+    limits:
+      cpu: "2000m"  # Hard limit
+      memory: "4Gi"
+
+  # Storage Configuration
+  persistence:
+    enabled: true  # REQUIRED for production
+    size: "20Gi"   # Minimum recommended
+    storageClass: ""  # Inherits from global
+    accessModes:
+      - ReadWriteOnce
+    annotations: {}  # Add cloud-specific annotations if needed
+
+# Replica Node Configuration
+secondary:
+  replicaCount: 2  # Recommended: 2+ for HA
+  
+  configuration: |
+    [mariadb]
+    # Server Identity
+    log-basename=my-mariadb
+    server-id=2
+    
+    # TLS Configuration
+    ssl_ca=/etc/mysql/ssl/replication/ca.crt
+    ssl_cert=/etc/mysql/ssl/replication/tls.crt
+    ssl_key=/etc/mysql/ssl/replication/tls.key
+    
+    # Replica Settings
+    read_only=ON
+    slave_parallel_threads=4
+
+  podLabels:
+    app: mysql
+    role: secondary
+
+  # Replication Certificates
+  extraVolumes:
+    - name: mysql-replication-certs
+      secret:
+        secretName: mysql-replication-certs
+        defaultMode: 0400
+
+  extraVolumeMounts:
+    - name: mysql-replication-certs
+      mountPath: /etc/mysql/ssl/replication/
+      readOnly: true
+
+  # Replica resources can be smaller than primary
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "1Gi"
+    limits:
+      cpu: "1000m"
+      memory: "2Gi"
+
+  persistence:
+    enabled: true
+    size: "20Gi"
+    storageClass: ""  # Inherits from global
+    accessModes:
+      - ReadWriteOnce
+
+# Service Configuration
+service:
+  type: ClusterIP  # Options: ClusterIP, NodePort, LoadBalancer
+  clusterIP: None  # Required for StatefulSet DNS
+  port: 3306  # Standard MySQL port
+  # NodePort configuration (uncomment if type=NodePort)
+  # nodePort: 30306
+  labels:
+    app: mysql
+  annotations: {}
+  # Cloud-specific annotations (examples):
+  # aws-load-balancer-internal: "true"
+  # service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+
+# Initialization Scripts
+initdbScripts:
+  # Primary init script - creates replication user
+  primary_init.sql: |
+    CREATE USER 'repluser'@'%' IDENTIFIED BY '$REPLICATION_PASSWORD';
+    GRANT REPLICATION REPLICA ON *.* TO 'repluser'@'%' REQUIRE SSL;
+    CREATE DATABASE primary_db;
+  
+  # Replica init script - configures replication
+  replica_init.sql: |
+    CHANGE MASTER TO 
+    MASTER_HOST='my-mariadb-primary.default.svc.cluster.local',
+    MASTER_USER='repluser',
+    MASTER_PASSWORD='$REPLICATION_PASSWORD',
+    MASTER_SSL_CA='/etc/mysql/ssl/replication/ca.crt',
+    MASTER_SSL=1;
+    START SLAVE;
+
+# Monitoring (Prometheus)
+metrics:
+  enabled: true
+  service:
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "9104"
+
+# Network Policies
+networkPolicy:
+  enabled: true  # Recommended for production
+  allowExternal: false  # Restrict to app namespaces
+  # Additional rules can be added here
+  # additionalRules: []
+
+# Advanced Scheduling
+affinity: {}  # Configure pod affinity/anti-affinity
+nodeSelector: {}  # Target specific nodes
+tolerations: []  # Allow scheduling on tainted nodes
+
+# Update Strategy
+updateStrategy:
+  type: RollingUpdate  # Options: RollingUpdate, OnDelete
+  rollingUpdate:
+    partition: 0  # For phased updates
+
+# Health Checks
+livenessProbe:
+  initialDelaySeconds: 120  # Allow slow starts
+  periodSeconds: 10
+  failureThreshold: 3
+
+readinessProbe:
+  initialDelaySeconds: 30
+  periodSeconds: 10
