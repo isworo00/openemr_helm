@@ -1,0 +1,28 @@
+# Enable replication mode (1 primary + 1 replica)
+architecture: replication
+replicaCount: 1  # Number of replicas (set to 1)
+
+# Primary node configuration
+primary:
+  persistence:
+    enabled: true
+    size: 8Gi  # Adjust based on needs
+
+# Replica node configuration
+secondary:
+  persistence:
+    enabled: true
+    size: 8Gi  # Same as primary
+
+# Root and user passwords (customize or use secrets)
+auth:
+  rootPassword: "my-root-password"  # Change this!
+  username: "myuser"
+  password: "myuser-password"
+  database: "mydb"
+
+# Optional: Customize MariaDB config
+configuration: |-
+  [mysqld]
+  innodb_buffer_pool_size=1G
+  max_connections=200
