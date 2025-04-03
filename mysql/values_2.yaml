@@ -123,7 +123,7 @@ initdbScripts:
   
   replica_init.sql: |
     CHANGE MASTER TO 
-    MASTER_HOST='mysql-sts-0.mysql.default.svc.cluster.local',
+    MASTER_HOST='mysql-sts-primary.mysql.default.svc.cluster.local',
     MASTER_USER='repluser',
     MASTER_PASSWORD='$REPLICATION_PASSWORD',
     MASTER_SSL_CA='/etc/mysql/ssl/replication/ca.crt',
