@@ -43,11 +43,25 @@ primary:
     - name: mysql-server-certs
       secret:
         secretName: mysql-server-certs
+        items:
+          - key: ca.crt
+            path: ca.crt
+          - key: tls.crt
+            path: tls.crt
+          - key: tls.key
+            path: tls.key
         #defaultMode: 0400
 
     - name: mysql-replication-certs 
       secret:
         secretName: mysql-replication-certs
+        items:
+          - key: ca.crt
+            path: ca.crt
+          - key: tls.crt
+            path: tls.crt
+          - key: tls.key
+            path: tls.key
         #defaultMode: 0400
 
   extraVolumeMounts:
