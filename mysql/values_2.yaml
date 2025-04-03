@@ -9,7 +9,7 @@ fullnameOverride: "mysql-sts"
 nameOverride: "mysql"
 
 auth:
-  existingSecret: "mariadb-credentials"
+  existingSecret: "mysql-credentials"
   existingSecretPasswordKey: "root-password"
   existingReplicationPasswordKey: "replication-password"
   existingUserPasswordKey: "user-password"
