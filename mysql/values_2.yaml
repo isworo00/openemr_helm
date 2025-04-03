@@ -10,9 +10,9 @@ nameOverride: "mysql"
 
 auth:
   existingSecret: "mysql-credentials"
-  existingSecretPasswordKey: "root-password"
-  existingReplicationPasswordKey: "replication-password"
-  existingUserPasswordKey: "user-password"
+  existingSecretPasswordKey: "mariadb-root-password"
+  existingReplicationPasswordKey: "mariadb-replication-password"
+  existingUserPasswordKey: "mariadb-password"
   username: "repluser"
   database: "primary_db"
   replicationUserRequireSSL: true
@@ -86,6 +86,16 @@ secondary:
     ssl_key=/etc/mysql/ssl/replication/tls.key
     read_only=ON
     slave_parallel_threads=4
+
+  extraVolumeMounts:
+    - name: config
+      mountPath: /opt/bitnami/mariadb/conf/my.cnf
+      subPath: my.cnf
+      readOnly: false
+
+  extraEnvVars:
+    - name: MARIADB_ENABLE_SSL
+      value: "yes"
 
   podLabels:
     app: mysql
