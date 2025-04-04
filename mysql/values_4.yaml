@@ -33,7 +33,7 @@ service:
   type: ClusterIP
   port: 3306
   # Optional: Override the default name (default: "my-mariadb")
-  # name: mysql  # Uncomment to force the name to "mysql"
+  name: mysql  # Uncomment to force the name to "mysql"
 
 primary:
   service:
