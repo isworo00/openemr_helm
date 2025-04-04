@@ -6,6 +6,11 @@ primary:
     size: 8Gi
 #  extraFlags:
 #    - "--require_secure_transport=ON"
+  service:
+    type: ClusterIP
+    port: 3306
+    annotations: {}
+    labels: {}
 
 secondary:
   replicaCount: 3
@@ -14,6 +19,8 @@ secondary:
     size: 8Gi
 #  extraFlags:
 #    - "--require_secure_transport=ON"
+  service:
+    enabled: false
 
 tls:
   enabled: true
@@ -21,17 +28,3 @@ tls:
     enabled: true
     engine: helm  # Options: helm, cert-manager
 
-service:
-  type: ClusterIP
-  port: 3306
-
-primary:
-  service:
-    type: ClusterIP
-    port: 3306
-    annotations: {}
-    labels: {}
-
-secondary:
-  service:
-    enabled: false
