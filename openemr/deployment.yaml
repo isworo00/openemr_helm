@@ -78,7 +78,7 @@ spec:
       volumes:
       - name: mysql-openemr-client-certs
         secret:
-          secretName: mysql-openemr-client-certs
+          secretName: my-mariadb-crt #default: mysql-openemr-client-certs, i changed because certificate not issued by the same CA
           items:
           - key: ca.crt
             path: mysql-ca
