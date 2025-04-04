@@ -1,20 +1,19 @@
 architecture: replication
-replicaCount: 3  # 1 primary + 1 replica
+replicaCount: 2  # 1 primary + 1 replica
 
 primary:
   persistence:
     enabled: true
     size: 8Gi
+#  extraFlags:
+#    - "--require_secure_transport=ON"
 
 secondary:
   persistence:
     enabled: true
     size: 8Gi
-
-#resources:
-#  requests:
-#    cpu: 500m
-#    memory: 1Gi
+#  extraFlags:
+#    - "--require_secure_transport=ON"
 
 tls:
   enabled: true
@@ -22,27 +21,17 @@ tls:
     enabled: true
     engine: helm  # Options: helm, cert-manager
 
-configurationConfigMap: mariadb-config
-
-extraConfig: |-
-  [mysqld]
-  require_secure_transport=ON
-
 service:
-  enabled: true
   type: ClusterIP
   port: 3306
 
 primary:
   service:
-    enabled: true
     type: ClusterIP
     port: 3306
-    # Optional: Custom labels/annotations
     annotations: {}
     labels: {}
 
-# Optional: Disable the secondary Service if not needed
 secondary:
   service:
     enabled: false
