@@ -11,10 +11,10 @@ secondary:
     enabled: true
     size: 8Gi
 
-resources:
-  requests:
-    cpu: 500m
-    memory: 1Gi
+#resources:
+#  requests:
+#    cpu: 500m
+#    memory: 1Gi
 
 tls:
   enabled: true
