@@ -19,14 +19,14 @@ spec:
       initContainers:
       - name: init-mysql-wait
         image: busybox:1.28
-        command: ['sh', '-c', "until nslookup mysql.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for mysql; sleep 2; done"]
+        command: ['sh', '-c', "until nslookup my-mariadb-primary.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for mysql; sleep 2; done"]
       - name: init-redis-wait
         image: busybox:1.28
         command: ['sh', '-c', "until nslookup redis.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for redis; sleep 2; done"]
       containers:
       - env:
         - name: MYSQL_HOST
-          value: "mysql"
+          value: "my-mariadb-primary"
         - name: MYSQL_PASS
           valueFrom:
             secretKeyRef:
