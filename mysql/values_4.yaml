@@ -1,5 +1,5 @@
 architecture: replication
-replicaCount: 2  # 1 primary + 1 replica
+replicaCount: 4  # 1 primary + 1 replica
 
 primary:
   persistence:
