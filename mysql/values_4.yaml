@@ -1,5 +1,4 @@
 architecture: replication
-replicaCount: 4  # 1 primary + 1 replica
 
 primary:
   persistence:
@@ -9,6 +8,7 @@ primary:
 #    - "--require_secure_transport=ON"
 
 secondary:
+  replicaCount: 3
   persistence:
     enabled: true
     size: 8Gi
