@@ -20,8 +20,11 @@ spec:
       - mysql
   commonName: mysql
   dnsNames:
-    - mysql-sts-0
-    - mysql-sts-0.mysql.default.svc.cluster.local
+    - mysql-primary
+    - localhost
+    - mysql-primary.default.svc.cluster.local
+    - mysql-0.mysql.default.svc.cluster.local
+    - mysql.default.svc.cluster.local
   issuerRef:
     name: ca-issuer
     kind: Issuer

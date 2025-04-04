@@ -1,28 +1,19 @@
-# Enable replication mode (1 primary + 1 replica)
+# MariaDB with Auto-Generated Everything
 architecture: replication
-replicaCount: 1  # Number of replicas (set to 1)
+replicaCount: 2  # 1 primary + 1 replica
 
-# Primary node configuration
+# Storage (minimum persistent config)
 primary:
   persistence:
     enabled: true
-    size: 8Gi  # Adjust based on needs
-
-# Replica node configuration
+    size: 8Gi
 secondary:
   persistence:
     enabled: true
-    size: 8Gi  # Same as primary
+    size: 8Gi
 
-# Root and user passwords (customize or use secrets)
-auth:
-  rootPassword: "my-root-password"  # Change this!
-  username: "myuser"
-  password: "myuser-password"
-  database: "mydb"
-
-# Optional: Customize MariaDB config
-configuration: |-
-  [mysqld]
-  innodb_buffer_pool_size=1G
-  max_connections=200
+# Resources (recommended minimum)
+resources:
+  requests:
+    cpu: 500m
+    memory: 1Gi

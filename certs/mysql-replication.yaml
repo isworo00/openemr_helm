@@ -20,6 +20,8 @@ spec:
     organizations:
       - mysql
   commonName: mysql
+  dnsNames:
+      - "*.mysql.default.svc.cluster.local"  # Wildcard for replicas
   issuerRef:
     name: ca-issuer
     kind: Issuer
