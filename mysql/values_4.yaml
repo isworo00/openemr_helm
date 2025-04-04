@@ -18,7 +18,10 @@ secondary:
     size: 8Gi
   extraFlags: "--require_secure_transport=ON"
   service:
-    enabled: false
+    type: ClusterIP
+    port: 3306
+    annotations: {}
+    labels: {}
 
 tls:
   enabled: true
