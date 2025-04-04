@@ -27,3 +27,24 @@ configurationConfigMap: mariadb-config
 extraConfig: |-
   [mysqld]
   require_secure_transport=ON
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 3306
+  # Optional: Override the default name (default: "my-mariadb")
+  # name: mysql  # Uncomment to force the name to "mysql"
+
+primary:
+  service:
+    enabled: true
+    type: ClusterIP
+    port: 3306
+    # Optional: Custom labels/annotations
+    annotations: {}
+    labels: {}
+
+# Optional: Disable the secondary Service if not needed
+secondary:
+  service:
+    enabled: false
