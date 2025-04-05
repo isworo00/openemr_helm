@@ -21,7 +21,8 @@ spec:
       - mysql
   commonName: mysql
   dnsNames:
-      - "*.mysql.default.svc.cluster.local"  # Wildcard for replicas
+    - mysql-mariadb-secondary.default.svc.cluster.local
+    - *.mysql-mariadb-primary.mysql-mariadb-secondary.svc.default.cluster.local
   issuerRef:
     name: ca-issuer
     kind: Issuer
