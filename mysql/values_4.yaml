@@ -1,7 +1,7 @@
 architecture: replication
 
 auth:
-  existingSecret: "custom-mariadb-secret"  # Change to your preferred secret name
+  existingSecret: "mysql-secret"  # Change to your preferred secret name
 
 primary:
   persistence:
