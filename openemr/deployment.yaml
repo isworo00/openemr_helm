@@ -52,9 +52,9 @@ spec:
           value: "defaultpassword"
         - name: SWARM_MODE
           value: "yes"
-        - name: FORCE_DATABASE_SSL_CONNECT
+        #- name: FORCE_DATABASE_SSL_CONNECT
         # uncomment below line (and comment above line) if forcing mysql x509
-        #- name: FORCE_DATABASE_X509_CONNECT
+        - name: FORCE_DATABASE_X509_CONNECT
           value: "1"
         image: openemr/openemr:7.0.2
         name: openemr
@@ -78,15 +78,15 @@ spec:
       volumes:
       - name: mysql-openemr-client-certs
         secret:
-          secretName: my-mariadb-crt #default: mysql-openemr-client-certs, i changed because certificate not issued by the same CA
+          secretName: mysql-openemr-client-certs #default: mysql-openemr-client-certs, i changed because certificate not issued by the same CA
           items:
           - key: ca.crt
-            path: mysql-mariadb-crt
+            path: mysql-ca
           # uncomment below if forcing mysql x509
-          #- key: tls.crt
-          #  path: mysql-cert
-          #- key: tls.key
-          #  path: mysql-key
+          - key: tls.crt
+            path: mysql-cert
+          - key: tls.key
+            path: mysql-key
       - name: websitevolume
         persistentVolumeClaim:
           claimName: websitevolume

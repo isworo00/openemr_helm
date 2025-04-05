@@ -17,7 +17,7 @@ spec:
       containers:
       - env:
         - name: PMA_HOSTS
-          value: mysql
+          value: mysql-mariadb-primary
         image: phpmyadmin/phpmyadmin
         name: phpmyadmin
         command: ["/wrapper.sh"]
@@ -63,10 +63,10 @@ spec:
           - key: ca.crt
             path: ca.pem
           # uncomment below if forcing mysql x509
-          #- key: tls.crt
-          #  path: tls.crt
-          #- key: tls.key
-          #  path: tls.key
+          - key: tls.crt
+            path: tls.crt
+          - key: tls.key
+            path: tls.key
       - name: phpmyadmin-config-map
         configMap:
           name: phpmyadmin-configmap
