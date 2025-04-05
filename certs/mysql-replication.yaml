@@ -21,8 +21,12 @@ spec:
       - mysql
   commonName: mysql
   dnsNames:
-    - mysql-mariadb-secondary.default.svc.cluster.local
-    - *.mysql-mariadb-primary.mysql-mariadb-secondary.svc.default.cluster.local
+    - mysql-mariadb
+    - mysql-mariadb-primary.mysql.default.svc.cluster.local
+    - mysql-mariadb-headless.default.svc.cluster.local
+    - *.mysql-mariadb-headless.default.svc.cluster.local
+    - localhost
+    - 127.0.0.1
   issuerRef:
     name: ca-issuer
     kind: Issuer
