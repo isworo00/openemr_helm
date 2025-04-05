@@ -19,14 +19,14 @@ spec:
       initContainers:
       - name: init-mysql-wait
         image: busybox:1.28
-        command: ['sh', '-c', "until nslookup my-mariadb-primary.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for mysql; sleep 2; done"]
+        command: ['sh', '-c', "until nslookup mysql-mariadb-primary.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for mysql; sleep 2; done"]
       - name: init-redis-wait
         image: busybox:1.28
         command: ['sh', '-c', "until nslookup redis.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for redis; sleep 2; done"]
       containers:
       - env:
         - name: MYSQL_HOST
-          value: "my-mariadb-primary"
+          value: "mysql-mariadb-primary"
         - name: MYSQL_PASS
           valueFrom:
             secretKeyRef:
@@ -35,7 +35,7 @@ spec:
         - name: MYSQL_ROOT_PASS
           valueFrom:
             secretKeyRef:
-              name: my-mariadb
+              name: mysql-mariadb
               key: mariadb-root-password
         - name: MYSQL_USER
           value: "openemr"
@@ -52,9 +52,9 @@ spec:
           value: "defaultpassword"
         - name: SWARM_MODE
           value: "yes"
-        # - name: FORCE_DATABASE_SSL_CONNECT
+        - name: FORCE_DATABASE_SSL_CONNECT
         # uncomment below line (and comment above line) if forcing mysql x509
-        - name: FORCE_DATABASE_X509_CONNECT
+        #- name: FORCE_DATABASE_X509_CONNECT
           value: "1"
         image: openemr/openemr:7.0.2
         name: openemr
@@ -83,10 +83,10 @@ spec:
           - key: ca.crt
             path: mysql-ca
           # uncomment below if forcing mysql x509
-          - key: tls.crt
-            path: mysql-cert
-          - key: tls.key
-            path: mysql-key
+          #- key: tls.crt
+          #  path: mysql-cert
+          #- key: tls.key
+          #  path: mysql-key
       - name: websitevolume
         persistentVolumeClaim:
           claimName: websitevolume
