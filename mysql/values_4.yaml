@@ -20,7 +20,7 @@ secondary:
     type: ClusterIP
     port: 3306
   tls:
-    certsSecretName: mysql-replication-certs
+    certsSecretName: mysql-server-certs
   extraFlags: "--require_secure_transport=ON"
 
 tls:

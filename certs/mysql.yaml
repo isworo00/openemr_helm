@@ -26,7 +26,8 @@ spec:
     - mysql-mariadb-primary
     - mysql-mariadb-primary.mysql.default.svc.cluster.local
     - mysql-mariadb-headless.default.svc.cluster.local
-    - *.mysql-mariadb-headless.default.svc.cluster.local
+    - mysql-mariadb-secondary
+    - mysql-mariadb-secondary.default.svc.cluster.local
   issuerRef:
     name: ca-issuer
     kind: Issuer
