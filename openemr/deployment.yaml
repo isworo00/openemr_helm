@@ -81,7 +81,7 @@ spec:
           secretName: my-mariadb-crt #default: mysql-openemr-client-certs, i changed because certificate not issued by the same CA
           items:
           - key: ca.crt
-            path: mysql-ca
+            path: mysql-mariadb-crt
           # uncomment below if forcing mysql x509
           #- key: tls.crt
           #  path: mysql-cert
