@@ -24,7 +24,7 @@ spec:
     - mysql-mariadb
     - mysql-mariadb-primary.mysql.default.svc.cluster.local
     - mysql-mariadb-headless.default.svc.cluster.local
-    - *.mysql-mariadb-headless.default.svc.cluster.local
+    - mysql-mariadb-secondary.default.svc.cluster.local
     - localhost
     - 127.0.0.1
   issuerRef:

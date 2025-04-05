@@ -22,7 +22,6 @@ spec:
   dnsNames:
     - localhost
     - 127.0.0.1
-    - *.mysql-mariadb-headless.default.svc.cluster.local
     - mysql-mariadb
     - mysql-mariadb-primary
     - mysql-mariadb-primary.mysql.default.svc.cluster.local
