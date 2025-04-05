@@ -35,7 +35,7 @@ spec:
         - name: MYSQL_ROOT_PASS
           valueFrom:
             secretKeyRef:
-              name: mysql-mariadb
+              name: mysql-secret
               key: mariadb-root-password
         - name: MYSQL_USER
           value: "openemr"
